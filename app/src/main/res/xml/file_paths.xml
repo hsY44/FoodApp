@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- CameraActivity에서 촬영 결과를 저장할 앱 전용 외부 디렉토리 경로 등록 -->
+    <!-- getExternalFilesDir(DIRECTORY_PICTURES) 경로에 해당 -->
+    <external-files-path name="pictures" path="Pictures/" />
+</paths>

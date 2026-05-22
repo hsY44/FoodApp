@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- 흰색 미니멀 팔레트 -->
+    <color name="bg_white">#FFFFFFFF</color>         <!-- 화면 배경 -->
+    <color name="surface_gray">#FFF5F5F5</color>     <!-- 입력창, 카드 배경 -->
+    <color name="primary_dark">#FF1A1A1A</color>     <!-- 버튼, 아이콘, 주요 요소 -->
+    <color name="text_primary">#FF1A1A1A</color>     <!-- 기본 텍스트 -->
+    <color name="text_secondary">#FF757575</color>   <!-- 보조 텍스트 -->
+    <color name="text_hint">#FFBDBDBD</color>        <!-- 입력창 힌트 -->
+    <color name="divider">#FFE0E0E0</color>          <!-- 구분선, 테두리 -->
+    <color name="image_placeholder">#FFF0F0F0</color><!-- 이미지 미선택 시 배경 -->
+    <color name="toolbar_bg">#FFFFFFFF</color>       <!-- 툴바 배경 -->
+    <color name="color_success">#FF2E7D32</color>    <!-- 중복 확인 성공(사용 가능) -->
+    <color name="color_error">#FFC62828</color>      <!-- 중복 확인 실패(사용 불가) -->
+</resources>
