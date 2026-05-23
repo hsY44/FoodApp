@@ -16,6 +16,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 public class HistoryActivity extends AppCompatActivity {
 
     private HistoryViewModel viewModel;
+    private TtsHelper tts;
     private RecyclerView recyclerView;
     private TextView emptyView;
 
@@ -24,10 +25,12 @@ public class HistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
+        tts = new TtsHelper(this);
         viewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
 
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setNavigationOnClickListener(v ->
+                tts.speakAndThen("뒤로 가기", this::finish));
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_clear) {
                 viewModel.deleteAll(); // ViewModel에서 삭제 후 LiveData 즉시 갱신
@@ -56,5 +59,11 @@ public class HistoryActivity extends AppCompatActivity {
         });
 
         viewModel.loadHistory();
+    }
+
+    @Override
+    protected void onDestroy() {
+        tts.shutdown();
+        super.onDestroy();
     }
 }

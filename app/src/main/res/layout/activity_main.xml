@@ -78,6 +78,17 @@
         android:textSize="15sp"
         android:paddingTop="14dp"
         android:paddingBottom="14dp"
+        android:layout_marginBottom="8dp"
         style="@style/Widget.Material3.Button.OutlinedButton"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/mainGuestBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="게스트로 시작"
+        android:textSize="15sp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        style="@style/Widget.Material3.Button.TextButton"/>
 
 </LinearLayout>

@@ -80,8 +80,13 @@ public class ClassifierViewModel extends AndroidViewModel {
             String foodName = output.first;
             float prob = output.second;
 
-            // 알러지 교차 검사 - 백그라운드에서 DB 조회 포함
-            String userAllergy = (userId != null) ? userRepository.getAllergy(userId) : "없음";
+            // 알러지 교차 검사 - 게스트는 SharedPreferences, 일반 사용자는 DB 조회
+            String userAllergy;
+            if (AppConstants.GUEST_USER_ID.equals(userId)) {
+                userAllergy = userRepository.getGuestAllergy();
+            } else {
+                userAllergy = (userId != null) ? userRepository.getAllergy(userId) : "없음";
+            }
             List<String> foodAllergens = FoodAllergyDatabase.getAllergens(foodName);
             List<String> matched = FoodAllergyDatabase.matchingAllergens(foodName, userAllergy);
 

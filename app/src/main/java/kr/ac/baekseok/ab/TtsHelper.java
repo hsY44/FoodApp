@@ -6,6 +6,8 @@ import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 
 import java.util.Locale;
 
@@ -84,6 +86,17 @@ public class TtsHelper implements TextToSpeech.OnInitListener {
             // TTS 자체가 null이면 콜백만 즉시 실행
             mainHandler.post(onDone);
         }
+    }
+
+    // 터치(손가락 닿는 순간)에 버튼 이름을 TTS로 안내
+    // ACTION_DOWN에서 발화 후 false를 반환해 클릭 이벤트가 정상 처리되도록 함
+    public void bindTouchTts(View view, String text) {
+        view.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                speak(text);
+            }
+            return false;
+        });
     }
 
     // Activity onDestroy()에서 반드시 호출

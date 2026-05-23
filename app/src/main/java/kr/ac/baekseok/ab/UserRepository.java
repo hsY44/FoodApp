@@ -1,6 +1,7 @@
 package kr.ac.baekseok.ab;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -12,11 +13,16 @@ public class UserRepository {
 
     private static final String DB_NAME = "LoginDB";
     private static final String TABLE_NAME = "JoinInfo";
+    private static final String GUEST_PREF = "guest_data";
+    private static final String KEY_GUEST_ALLERGY = "allergy";
 
     private final DBHelper dbHelper;
+    private final SharedPreferences guestPrefs;
 
     public UserRepository(Context context) {
         dbHelper = new DBHelper(context);
+        guestPrefs = context.getApplicationContext()
+                .getSharedPreferences(GUEST_PREF, Context.MODE_PRIVATE);
     }
 
     public boolean isIdRegistered(String id) {
@@ -70,6 +76,20 @@ public class UserRepository {
         db.execSQL("UPDATE " + TABLE_NAME + " SET allergy = ? WHERE uId = ?",
                 new Object[]{allergyVal, id});
         db.close();
+    }
+
+    // 게스트 알러지 - SharedPreferences에 저장 (DB 계정 없음)
+    public String getGuestAllergy() {
+        return guestPrefs.getString(KEY_GUEST_ALLERGY, "없음");
+    }
+
+    public void updateGuestAllergy(String allergy) {
+        String val = (allergy == null || allergy.trim().isEmpty()) ? "없음" : allergy.trim();
+        guestPrefs.edit().putString(KEY_GUEST_ALLERGY, val).apply();
+    }
+
+    public void clearGuestAllergy() {
+        guestPrefs.edit().remove(KEY_GUEST_ALLERGY).apply();
     }
 
     // 비밀번호 변경 - 새 비밀번호를 SHA-256으로 해싱하여 저장

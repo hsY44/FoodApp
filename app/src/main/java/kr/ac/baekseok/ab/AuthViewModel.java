@@ -77,7 +77,7 @@ public class AuthViewModel extends AndroidViewModel {
     }
 
     // 회원가입 처리
-    public void register(String id, String pw, String confirmTarget, String allergy) {
+    public void register(String id, String pw, String allergy) {
         if (!isIdAvailable) { _idCheckState.setValue(IdCheckState.EMPTY); return; }
         if (pw.isEmpty()) { _loginState.setValue(LoginState.EMPTY_PASSWORD); return; }
         if (pw.length() < 4) {

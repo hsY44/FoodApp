@@ -60,13 +60,15 @@ public class CameraActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(ClassifierViewModel.class);
 
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setNavigationOnClickListener(v ->
+                tts.speakAndThen("뒤로 가기", this::finish));
 
         imageView = findViewById(R.id.imageView);
         textView = findViewById(R.id.textView);
         takeBtn = findViewById(R.id.takeBtn);
         progressBar = findViewById(R.id.progressBar);
 
+        tts.bindTouchTts(takeBtn, "사진 촬영");
         takeBtn.setOnClickListener(v -> getImageFromCamera());
 
         // 모델 준비 완료 시 버튼 활성화

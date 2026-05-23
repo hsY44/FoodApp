@@ -49,7 +49,8 @@ public class Join extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setNavigationOnClickListener(v ->
+                tts.speakAndThen("뒤로 가기", this::finish));
 
         j_Id = (EditText) findViewById(R.id.jId);
         j_Pw = (EditText) findViewById(R.id.jPw);
@@ -71,14 +72,16 @@ public class Join extends AppCompatActivity {
         });
 
         Button btnCheckId = findViewById(R.id.btnCheckId);
+        tts.bindTouchTts(btnCheckId, "아이디 중복 확인");
         btnCheckId.setOnClickListener(v ->
                 viewModel.checkId(j_Id.getText().toString().trim()));
 
         Button j_btn1 = (Button) findViewById(R.id.jRegistration);
+        tts.bindTouchTts(j_btn1, "회원가입");
         j_btn1.setOnClickListener(v -> {
             String id = j_Id.getText().toString().trim();
             String pw = j_Pw.getText().toString().trim();
-            viewModel.register(id, pw, pw, getSelectedAllergens());
+            viewModel.register(id, pw, getSelectedAllergens());
         });
 
         // 중복 확인 결과 관찰

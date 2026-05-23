@@ -13,15 +13,33 @@ import com.google.android.material.appbar.MaterialToolbar;
 public class SubActivity extends AppCompatActivity {
 
     public static final String KEY_USER_ID = "USER_ID";
+    public static final String GUEST_USER_ID = AppConstants.GUEST_USER_ID;
 
     private String userId;
+    private TtsHelper tts;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub);
 
+        tts = new TtsHelper(this);
+        sessionManager = new SessionManager(this);
+
         userId = getIntent().getStringExtra(KEY_USER_ID);
+
+        // intent에 userId가 없으면 (태스크 완전 소멸 후 복원 등) 세션에서 복구
+        if (userId == null) {
+            userId = sessionManager.getSavedUserId();
+        }
+        if (userId == null) {
+            // 세션도 없으면 로그인 화면으로
+            startActivity(new Intent(this, MainActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            finish();
+            return;
+        }
 
         // 툴바 overflow 메뉴에서 로그아웃 처리
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
@@ -34,42 +52,51 @@ public class SubActivity extends AppCompatActivity {
         });
 
         Button galleryBtn = findViewById(R.id.galleryBtn);
+        Button cameraBtn = findViewById(R.id.cameraBtn);
+        Button myPageBtn = findViewById(R.id.myPageBtn);
+        Button historyBtn = findViewById(R.id.historyBtn);
+
+        tts.bindTouchTts(galleryBtn, "갤러리에서 선택");
+        tts.bindTouchTts(cameraBtn, "카메라로 촬영");
+        tts.bindTouchTts(myPageBtn, "마이페이지");
+        tts.bindTouchTts(historyBtn, "분류 히스토리 보기");
+
         galleryBtn.setOnClickListener(view -> {
             Intent i = new Intent(this, GalleryActivity.class);
             i.putExtra(KEY_USER_ID, userId);
             startActivity(i);
         });
 
-        Button cameraBtn = findViewById(R.id.cameraBtn);
         cameraBtn.setOnClickListener(view -> {
             Intent i = new Intent(this, CameraActivity.class);
             i.putExtra(KEY_USER_ID, userId);
             startActivity(i);
         });
 
-        Button myPageBtn = findViewById(R.id.myPageBtn);
         myPageBtn.setOnClickListener(view -> {
             Intent i = new Intent(this, MyPageActivity.class);
             i.putExtra(KEY_USER_ID, userId);
             startActivity(i);
         });
 
-        Button historyBtn = findViewById(R.id.historyBtn);
         historyBtn.setOnClickListener(view ->
                 startActivity(new Intent(this, HistoryActivity.class)));
     }
 
     // 로그아웃 확인 다이얼로그
     private void showLogoutDialog() {
+        String title = GUEST_USER_ID.equals(userId) ? "종료" : "로그아웃";
+        String message = GUEST_USER_ID.equals(userId) ? "메인 화면으로 돌아가시겠습니까?" : "로그아웃 하시겠습니까?";
         new AlertDialog.Builder(this)
-                .setTitle("로그아웃")
-                .setMessage("로그아웃 하시겠습니까?")
-                .setPositiveButton("로그아웃", (dialog, which) -> logout())
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(title, (dialog, which) -> logout())
                 .setNegativeButton("취소", null)
                 .show();
     }
 
     private void logout() {
+        sessionManager.clear();
         // FLAG_ACTIVITY_CLEAR_TASK: SubActivity를 포함한 백스택 전체 제거
         // 뒤로가기를 눌러도 SubActivity로 돌아오지 않음
         Intent intent = new Intent(this, MainActivity.class);
@@ -81,5 +108,11 @@ public class SubActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         showLogoutDialog();
+    }
+
+    @Override
+    protected void onDestroy() {
+        tts.shutdown();
+        super.onDestroy();
     }
 }

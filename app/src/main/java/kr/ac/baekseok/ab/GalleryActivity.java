@@ -53,13 +53,15 @@ public class GalleryActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(ClassifierViewModel.class);
 
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setNavigationOnClickListener(v ->
+                tts.speakAndThen("뒤로 가기", this::finish));
 
         imageView = findViewById(R.id.imageView);
         textView = findViewById(R.id.textView);
         selectBtn = findViewById(R.id.selectBtn);
         progressBar = findViewById(R.id.progressBar);
 
+        tts.bindTouchTts(selectBtn, "사진 선택");
         selectBtn.setOnClickListener(v -> getImageFromGallery());
 
         viewModel.isReady.observe(this, ready ->

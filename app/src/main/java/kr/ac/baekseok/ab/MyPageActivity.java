@@ -3,7 +3,9 @@ package kr.ac.baekseok.ab;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,10 +50,17 @@ public class MyPageActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(MyPageViewModel.class);
 
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setNavigationOnClickListener(v ->
+                tts.speakAndThen("뒤로 가기", this::finish));
+
+        boolean isGuest = AppConstants.GUEST_USER_ID.equals(userId);
 
         TextView tvUserId = findViewById(R.id.tvUserId);
-        tvUserId.setText(userId != null ? userId : "-");
+        tvUserId.setText(isGuest ? "게스트" : (userId != null ? userId : "-"));
+
+        // 게스트는 비밀번호 섹션 숨김
+        LinearLayout passwordSection = findViewById(R.id.passwordSection);
+        if (isGuest) passwordSection.setVisibility(View.GONE);
 
         predefinedChipGroup = findViewById(R.id.predefinedChipGroup);
         customChipGroup = findViewById(R.id.customChipGroup);
@@ -63,8 +72,10 @@ public class MyPageActivity extends AppCompatActivity {
         etConfirmPw = (EditText) findViewById(R.id.etConfirmPw);
 
         MaterialButton btnSaveAllergy = findViewById(R.id.btnSaveAllergy);
-        btnSaveAllergy.setOnClickListener(v ->
-                viewModel.saveAllergy(userId, getSelectedAllergens()));
+        btnSaveAllergy.setOnClickListener(v -> {
+            if (isGuest) viewModel.saveGuestAllergy(getSelectedAllergens());
+            else viewModel.saveAllergy(userId, getSelectedAllergens());
+        });
 
         MaterialButton btnChangePw = findViewById(R.id.btnChangePw);
         btnChangePw.setOnClickListener(v ->
@@ -75,7 +86,8 @@ public class MyPageActivity extends AppCompatActivity {
 
         // 알러지 데이터 로드 → Chip 상태로 복원
         viewModel.allergy.observe(this, this::loadSavedAllergens);
-        viewModel.loadAllergy(userId);
+        if (isGuest) viewModel.loadGuestAllergy();
+        else viewModel.loadAllergy(userId);
 
         // 알러지 저장 결과
         viewModel.allergySaveResult.observe(this, success -> {

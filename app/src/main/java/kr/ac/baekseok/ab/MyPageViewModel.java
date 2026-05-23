@@ -40,6 +40,15 @@ public class MyPageViewModel extends AndroidViewModel {
         _allergySaveResult.setValue(true);
     }
 
+    public void loadGuestAllergy() {
+        _allergy.setValue(userRepository.getGuestAllergy());
+    }
+
+    public void saveGuestAllergy(String allergyStr) {
+        userRepository.updateGuestAllergy(allergyStr);
+        _allergySaveResult.setValue(true);
+    }
+
     // 비밀번호 변경 - 단계별 검증 후 처리
     public void changePassword(String userId, String currentPw, String newPw, String confirmPw) {
         if (currentPw.isEmpty()) {

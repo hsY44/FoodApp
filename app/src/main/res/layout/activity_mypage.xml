@@ -97,78 +97,86 @@
                 android:paddingBottom="14dp"
                 style="@style/Widget.Material3.Button"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="24dp"/>
-
-            <!-- ─── 비밀번호 변경 섹션 ─── -->
-            <TextView
+            <LinearLayout
+                android:id="@+id/passwordSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="비밀번호 변경"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:layout_marginBottom="16dp"/>
+                android:orientation="vertical">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="현재 비밀번호"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_marginBottom="12dp">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/divider"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginBottom="24dp"/>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etCurrentPw"
+                <!-- ─── 비밀번호 변경 섹션 ─── -->
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:maxLines="1"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:text="비밀번호 변경"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="16dp"/>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="새 비밀번호 (4자 이상)"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_marginBottom="12dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etNewPw"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:maxLines="1"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:hint="현재 비밀번호"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_marginBottom="12dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="새 비밀번호 재입력"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_marginBottom="16dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etCurrentPw"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:maxLines="1"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etConfirmPw"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:maxLines="1"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:hint="새 비밀번호 (4자 이상)"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_marginBottom="12dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnChangePw"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="비밀번호 수정"
-                android:textSize="15sp"
-                android:paddingTop="14dp"
-                android:paddingBottom="14dp"
-                android:layout_marginBottom="24dp"
-                style="@style/Widget.Material3.Button.OutlinedButton"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etNewPw"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:maxLines="1"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="새 비밀번호 재입력"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_marginBottom="16dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etConfirmPw"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:maxLines="1"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnChangePw"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="비밀번호 수정"
+                    android:textSize="15sp"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp"
+                    android:layout_marginBottom="24dp"
+                    style="@style/Widget.Material3.Button.OutlinedButton"/>
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
