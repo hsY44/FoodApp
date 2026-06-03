@@ -8,9 +8,9 @@ import androidx.lifecycle.Observer;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-// 단발성 이벤트 전달용 LiveData
-// 일반 LiveData는 화면 회전 시 마지막 값을 재전달 → 로그인 성공 메시지가 중복 표시됨
-// SingleLiveEvent는 consume된 이벤트를 재전달하지 않아 이를 방지
+// 한 번만 전달되는 이벤트용 데이터 클래스
+// 일반 LiveData는 화면 회전 시 이전 값을 다시 전달 → 로그인 성공 메시지가 중복 표시됨
+// SingleLiveEvent는 이미 전달한 이벤트를 다시 보내지 않음
 public class SingleLiveEvent<T> extends MutableLiveData<T> {
 
     private final AtomicBoolean pending = new AtomicBoolean(false);
@@ -18,7 +18,7 @@ public class SingleLiveEvent<T> extends MutableLiveData<T> {
     @Override
     public void observe(@NonNull LifecycleOwner owner, @NonNull Observer<? super T> observer) {
         super.observe(owner, value -> {
-            // pending이 true일 때만 observer에 전달 (한 번만 소비)
+            // 전달 대기 상태일 때만 이벤트 전달 (한 번만 전달되도록)
             if (pending.compareAndSet(true, false)) {
                 observer.onChanged(value);
             }

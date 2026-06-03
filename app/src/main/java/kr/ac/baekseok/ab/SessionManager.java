@@ -3,7 +3,7 @@ package kr.ac.baekseok.ab;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-// 앱 재시작 후에도 로그인 상태를 유지하기 위한 SharedPreferences 래퍼
+// 앱을 껐다 켜도 로그인 상태를 유지하기 위해 내부 저장소에 사용자 ID를 저장하는 클래스
 // 게스트 로그인은 저장하지 않음
 public class SessionManager {
 
@@ -16,7 +16,7 @@ public class SessionManager {
         prefs = context.getSharedPreferences(PREF, Context.MODE_PRIVATE);
     }
 
-    // commit(): 동기 쓰기 - apply()는 비동기라 프로세스 강제 종료 시 디스크 미기록 가능
+    // commit() 사용 이유: apply()는 저장 전에 앱이 강제 종료되면 데이터가 사라질 수 있음
     public void save(String userId) {
         prefs.edit().putString(KEY_USER_ID, userId).commit();
     }

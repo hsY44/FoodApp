@@ -18,14 +18,6 @@ local.properties
 *.keystore
 *.log
 
-# 미사용 TFLite 모델 - 앱은 Inq1.tflite 하나만 사용
-app/src/main/assets/Inception1.tflite
+# 100MB 초과로 GitHub 업로드 불가한 모델만 제외
 app/src/main/assets/model.tflite
-app/src/main/assets/model2.tflite
-app/src/main/assets/modelM.tflite
-app/src/main/assets/model_quant_f16.tflite
-app/src/main/ml/Inception1.tflite
 app/src/main/ml/model.tflite
-app/src/main/ml/model2.tflite
-app/src/main/ml/modelM.tflite
-app/src/main/ml/model_quant_f16.tflite

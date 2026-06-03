@@ -11,9 +11,9 @@ import android.view.View;
 
 import java.util.Locale;
 
-// TTS 공통 헬퍼
-// speakAndThen(): 발화 완료 후 콜백 실행 - 회원가입 완료 후 화면 전환처럼 TTS가 끝난 뒤 동작해야 할 때 사용
-// speak(): 단순 발화 (완료 콜백 없음)
+// 음성 안내(TTS) 헬퍼
+// speakAndThen(): 말이 끝난 뒤 다음 동작 실행 (예: 회원가입 완료 안내 → 화면 전환)
+// speak(): 단순 음성 안내
 public class TtsHelper implements TextToSpeech.OnInitListener {
 
     private static final String TAG = "[TTS]";
@@ -34,7 +34,7 @@ public class TtsHelper implements TextToSpeech.OnInitListener {
             @Override
             public void onDone(String utteranceId) {
                 Log.i(TAG, "발화 완료: " + utteranceId);
-                // 콜백이 등록된 발화가 완료되면 메인 스레드에서 콜백 실행
+                // 말이 끝나면 화면 처리 스레드에서 다음 동작 실행
                 if (UID_CALLBACK.equals(utteranceId) && completionCallback != null) {
                     Runnable cb = completionCallback;
                     completionCallback = null; // 한 번만 실행되도록 즉시 초기화
@@ -45,7 +45,7 @@ public class TtsHelper implements TextToSpeech.OnInitListener {
             @Override
             public void onError(String utteranceId) {
                 Log.e(TAG, "발화 오류: " + utteranceId);
-                // 오류 시에도 콜백 실행 - TTS 오류로 화면 전환이 막히지 않도록
+                // 음성 오류가 나도 콜백은 실행 - TTS 오류로 화면 전환이 막히지 않도록
                 if (UID_CALLBACK.equals(utteranceId) && completionCallback != null) {
                     Runnable cb = completionCallback;
                     completionCallback = null;
@@ -69,15 +69,15 @@ public class TtsHelper implements TextToSpeech.OnInitListener {
         }
     }
 
-    // 단순 발화 - 완료 콜백 없음
+    // 단순 음성 안내 - 끝난 뒤 별도 동작 없음
     public void speak(String text) {
         if (tts != null) {
             tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, UID_PLAIN);
         }
     }
 
-    // 발화 완료 후 콜백 실행 - 화면 전환처럼 TTS가 끝난 뒤 동작해야 할 때 사용
-    // onDone 또는 onError 둘 다에서 콜백이 실행되므로 TTS 오류 시에도 동작이 막히지 않음
+    // 말이 끝난 뒤 다음 동작 실행 - 화면 전환처럼 TTS가 끝나야 할 때 사용
+    // 성공/실패 모두 콜백을 실행해 TTS 오류로 화면 전환이 막히지 않도록 함
     public void speakAndThen(String text, Runnable onDone) {
         if (tts != null) {
             this.completionCallback = onDone;
@@ -88,8 +88,8 @@ public class TtsHelper implements TextToSpeech.OnInitListener {
         }
     }
 
-    // 터치(손가락 닿는 순간)에 버튼 이름을 TTS로 안내
-    // ACTION_DOWN에서 발화 후 false를 반환해 클릭 이벤트가 정상 처리되도록 함
+    // 손가락이 버튼에 닿는 순간 버튼 이름을 음성으로 안내
+    // false를 반환해야 클릭 이벤트도 정상 동작함
     public void bindTouchTts(View view, String text) {
         view.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -99,7 +99,7 @@ public class TtsHelper implements TextToSpeech.OnInitListener {
         });
     }
 
-    // Activity onDestroy()에서 반드시 호출
+    // 화면 종료 시 반드시 호출
     public void shutdown() {
         if (tts != null) {
             tts.stop();

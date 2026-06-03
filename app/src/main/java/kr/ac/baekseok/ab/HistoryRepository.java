@@ -13,6 +13,7 @@ import java.util.Locale;
 
 // 분류 히스토리 저장/조회를 담당하는 Repository
 // LoginDB와 분리된 별도 DB(HistoryDB)를 사용하여 사용자 데이터와 충돌 방지
+// DB 버전 2: userId 컬럼 추가 - 사용자별 히스토리 분리
 public class HistoryRepository {
 
     private static final String DB_NAME = "HistoryDB";
@@ -26,22 +27,23 @@ public class HistoryRepository {
         dbHelper = new DBHelper(context);
     }
 
-    // 분류 결과 1건 저장 - Camera/GalleryActivity에서 분류 후 호출
-    public void save(String source, String result, float probability) {
+    // 분류 결과 1건 저장 - ClassifierViewModel에서 분류 후 호출
+    public void save(String userId, String source, String result, float probability) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         String timestamp = DATE_FORMAT.format(new Date());
         db.execSQL(
-                "INSERT INTO " + TABLE_NAME + " (source, result, probability, timestamp) VALUES(?, ?, ?, ?)",
-                new Object[]{source, result, probability, timestamp});
+                "INSERT INTO " + TABLE_NAME + " (userId, source, result, probability, timestamp) VALUES(?, ?, ?, ?, ?)",
+                new Object[]{userId, source, result, probability, timestamp});
         db.close();
     }
 
-    // 전체 히스토리 조회 - 최신순(id DESC) 정렬
-    public List<HistoryRecord> getAll() {
+    // 해당 사용자의 히스토리 조회 - 최신순(id DESC) 정렬
+    public List<HistoryRecord> getAll(String userId) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery(
-                "SELECT id, source, result, probability, timestamp FROM " + TABLE_NAME + " ORDER BY id DESC",
-                null);
+                "SELECT id, source, result, probability, timestamp FROM " + TABLE_NAME +
+                " WHERE userId = ? ORDER BY id DESC",
+                new String[]{userId});
 
         List<HistoryRecord> list = new ArrayList<>();
         while (cursor.moveToNext()) {
@@ -57,25 +59,24 @@ public class HistoryRepository {
         return list;
     }
 
-    // 히스토리 전체 삭제
-    public void deleteAll() {
+    // 해당 사용자의 히스토리 전체 삭제
+    public void deleteAll(String userId) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.execSQL("DELETE FROM " + TABLE_NAME);
+        db.execSQL("DELETE FROM " + TABLE_NAME + " WHERE userId = ?", new Object[]{userId});
         db.close();
     }
 
     private static class DBHelper extends SQLiteOpenHelper {
 
         public DBHelper(Context context) {
-            super(context, DB_NAME, null, 1);
+            super(context, DB_NAME, null, 2);
         }
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            // id: 자동 증가 PK, source: 촬영 방법, result: 클래스명, probability: 확률, timestamp: 일시
             db.execSQL("CREATE TABLE " + TABLE_NAME +
                     "(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "source TEXT, result TEXT, probability REAL, timestamp TEXT)");
+                    "userId TEXT, source TEXT, result TEXT, probability REAL, timestamp TEXT)");
         }
 
         @Override

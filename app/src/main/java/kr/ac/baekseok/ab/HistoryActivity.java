@@ -27,6 +27,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         tts = new TtsHelper(this);
         viewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
+        String userId = getIntent().getStringExtra(SubActivity.KEY_USER_ID);
 
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener(v ->
@@ -58,7 +59,8 @@ public class HistoryActivity extends AppCompatActivity {
             }
         });
 
-        viewModel.loadHistory();
+        // 해당 사용자의 히스토리만 로드 - 다른 사용자 기록이 섞이지 않도록 userId 전달
+        viewModel.loadHistory(userId);
     }
 
     @Override

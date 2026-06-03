@@ -116,6 +116,7 @@ public class GalleryActivity extends AppCompatActivity {
         Bitmap bitmap = decodeBitmap(data.getData());
         if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
+            // ViewModel에 분류 요청 - 백그라운드 스레드에서 처리
             viewModel.classify(bitmap, userId, "갤러리");
         }
     }

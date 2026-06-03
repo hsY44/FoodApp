@@ -17,10 +17,10 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-// 이미지 분류 비즈니스 로직 담당 ViewModel
+// 이미지 분류 로직 담당 ViewModel
 // CameraActivity / GalleryActivity 에서 공유
-// 핵심: 분류 추론을 백그라운드 스레드(ExecutorService)에서 실행하여 ANR 방지
-// Activity는 LiveData만 관찰 - 직접 분류 로직에 관여하지 않음
+// 핵심: 분류 작업을 별도로 처리해서 앱 화면이 멈추지 않도록 함
+// 화면은 결과만 받아서 표시 - 분류 로직에 관여하지 않음
 public class ClassifierViewModel extends AndroidViewModel {
 
     private static final String TAG = "[ClassifierVM]";
@@ -29,19 +29,19 @@ public class ClassifierViewModel extends AndroidViewModel {
     private final HistoryRepository historyRepository;
     private final UserRepository userRepository;
 
-    // 단일 스레드 풀 - 분류 작업은 순차 처리 (동시 추론 방지)
+    // 분류 작업은 한 번에 하나씩 차례대로 처리
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    // 모델 초기화 완료 여부 - Activity에서 버튼 활성화 제어에 사용
+    // 모델 준비 완료 여부 - 버튼 활성화에 사용
     private final MutableLiveData<Boolean> _isReady = new MutableLiveData<>(false);
     public final LiveData<Boolean> isReady = _isReady;
 
-    // 분류 진행 중 여부 - Activity에서 ProgressBar 및 버튼 비활성화 제어에 사용
+    // 분류 중 여부 - 로딩 표시와 버튼 비활성화에 사용
     private final MutableLiveData<Boolean> _isClassifying = new MutableLiveData<>(false);
     public final LiveData<Boolean> isClassifying = _isClassifying;
 
-    // 분류 결과 - 식품명, 확률, 알러지 성분, 사용자 알러지 매칭 결과 포함
+    // 분류 결과 (식품명, 확률, 식품 알러지 성분, 내 알러지와 일치하는 성분)
     private final SingleLiveEvent<ClassificationResult> _result = new SingleLiveEvent<>();
     public final LiveData<ClassificationResult> result = _result;
 
@@ -51,7 +51,7 @@ public class ClassifierViewModel extends AndroidViewModel {
         historyRepository = new HistoryRepository(application);
         userRepository = new UserRepository(application);
 
-        // 모델 초기화도 백그라운드에서 수행 - 모델 로드가 수백ms 소요될 수 있음
+        // 모델 파일 로드는 시간이 걸리므로 앱이 멈추지 않도록 뒤에서 처리
         initClassifierAsync();
     }
 
@@ -66,7 +66,7 @@ public class ClassifierViewModel extends AndroidViewModel {
         });
     }
 
-    // 이미지 분류 실행 - 백그라운드 스레드에서 추론, 결과는 메인 스레드로 전달
+    // 이미지 분류 실행 - 별도 작업으로 처리 후 결과를 화면으로 전달
     public void classify(Bitmap bitmap, String userId, String source) {
         if (!Boolean.TRUE.equals(_isReady.getValue())) {
             Log.w(TAG, "모델 초기화 전 classify() 호출 무시");
@@ -80,7 +80,7 @@ public class ClassifierViewModel extends AndroidViewModel {
             String foodName = output.first;
             float prob = output.second;
 
-            // 알러지 교차 검사 - 게스트는 SharedPreferences, 일반 사용자는 DB 조회
+            // 알러지 정보 가져오기 - 게스트는 임시 저장소, 일반 사용자는 DB
             String userAllergy;
             if (AppConstants.GUEST_USER_ID.equals(userId)) {
                 userAllergy = userRepository.getGuestAllergy();
@@ -90,13 +90,13 @@ public class ClassifierViewModel extends AndroidViewModel {
             List<String> foodAllergens = FoodAllergyDatabase.getAllergens(foodName);
             List<String> matched = FoodAllergyDatabase.matchingAllergens(foodName, userAllergy);
 
-            // 히스토리 저장 (백그라운드에서 처리)
-            historyRepository.save(source, foodName, prob);
+            // 분류 기록 저장
+            historyRepository.save(userId, source, foodName, prob);
 
             ClassificationResult classificationResult =
                     new ClassificationResult(foodName, prob, foodAllergens, matched);
 
-            // UI 업데이트는 반드시 메인 스레드에서
+            // 화면 업데이트는 반드시 화면을 담당하는 메인 스레드에서 실행
             mainHandler.post(() -> {
                 _result.setValue(classificationResult);
                 _isClassifying.setValue(false);
@@ -104,12 +104,11 @@ public class ClassifierViewModel extends AndroidViewModel {
         });
     }
 
-    // ViewModel이 소멸될 때 자원 해제
-    // Activity가 완전히 종료될 때만 호출 - 화면 회전에서는 호출되지 않음
+    // 화면이 완전히 종료될 때 실행 - 화면 회전 시에는 실행되지 않음
     @Override
     protected void onCleared() {
-        executor.shutdown();     // 스레드 풀 종료
-        classifier.finish();     // TFLite 네이티브 자원 해제
+        executor.shutdown();     // 별도 작업 실행기 종료
+        classifier.finish();     // 분류 모델 자원 해제
         super.onCleared();
     }
 }

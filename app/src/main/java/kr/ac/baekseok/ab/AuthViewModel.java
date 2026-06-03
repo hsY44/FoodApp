@@ -6,14 +6,14 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-// 인증 관련 비즈니스 로직 담당 ViewModel
+// 로그인/회원가입 로직 담당 ViewModel
 // MainActivity(로그인), Join(회원가입) 에서 공유
-// Activity는 LiveData를 observe하여 UI만 처리 - 로직은 이 클래스에만 존재
+// 화면은 결과만 받아서 표시 - 로그인/회원가입 로직은 이 클래스에만 존재
 public class AuthViewModel extends AndroidViewModel {
 
     private final UserRepository userRepository;
 
-    // SingleLiveEvent: 화면 회전 시 이벤트 재전달 방지
+    // 화면 회전 시 같은 이벤트가 다시 전달되지 않는 이벤트 타입
     private final SingleLiveEvent<LoginState> _loginState = new SingleLiveEvent<>();
     public final LiveData<LoginState> loginState = _loginState;
 
@@ -23,8 +23,8 @@ public class AuthViewModel extends AndroidViewModel {
     private final SingleLiveEvent<Boolean> _registerSuccess = new SingleLiveEvent<>();
     public final LiveData<Boolean> registerSuccess = _registerSuccess;
 
-    // 중복 확인 통과 여부와 확인된 ID를 함께 추적
-    // ID가 변경되면 다시 확인을 강제하기 위해 checkedId와 비교
+    // 중복 확인 통과 여부와 확인된 ID를 함께 저장
+    // ID를 바꾸면 다시 확인해야 하므로 저장된 ID와 비교
     private boolean isIdAvailable = false;
     private String checkedId = "";
 
@@ -33,7 +33,7 @@ public class AuthViewModel extends AndroidViewModel {
         userRepository = new UserRepository(application);
     }
 
-    // 로그인 처리 - 비밀번호는 SHA-256 해싱 후 DB와 비교
+    // 로그인 처리 - 비밀번호를 암호화한 뒤 DB에 저장된 값과 비교
     public void login(String id, String pw) {
         if (id.isEmpty()) { _loginState.setValue(LoginState.EMPTY_ID); return; }
         if (pw.isEmpty()) { _loginState.setValue(LoginState.EMPTY_PASSWORD); return; }

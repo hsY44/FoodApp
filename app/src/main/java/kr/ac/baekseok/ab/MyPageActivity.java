@@ -133,6 +133,7 @@ public class MyPageActivity extends AppCompatActivity {
         customChipGroup.addView(addChip);
     }
 
+    // 삭제 가능한 커스텀 알러지 칩 추가 - '+기타' 칩(addChip) 바로 앞에 삽입
     private void addCustomChip(String allergen) {
         Chip chip = new Chip(this);
         chip.setText(allergen);
@@ -141,6 +142,8 @@ public class MyPageActivity extends AppCompatActivity {
         customChipGroup.addView(chip, customChipGroup.getChildCount() - 1);
     }
 
+    // 저장된 알러지 문자열을 파싱해 Chip 상태로 복원
+    // 미리 정의된 항목이면 predefinedChipGroup에서 선택 처리, 아니면 커스텀 칩으로 추가
     private void loadSavedAllergens(String savedAllergy) {
         if (savedAllergy == null || savedAllergy.equals("없음")) return;
         List<String> predefinedList = Arrays.asList(PREDEFINED);
@@ -158,6 +161,7 @@ public class MyPageActivity extends AppCompatActivity {
         }
     }
 
+    // 기타 알러지 직접 입력 다이얼로그 - Join과 동일 로직, 기존 항목이면 미리 정의 칩에서 자동 선택
     private void showAddAllergenDialog() {
         EditText input = new EditText(this);
         input.setHint("알러지 성분 입력");

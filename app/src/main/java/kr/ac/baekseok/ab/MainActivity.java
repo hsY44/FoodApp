@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
         tts = new TtsHelper(this);
 
-        // AndroidViewModel은 별도 Factory 없이 ViewModelProvider로 생성 가능
+        // 화면 회전에도 데이터가 유지되는 ViewModel 생성
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
         mainId = (EditText) findViewById(R.id.edtId);
@@ -58,15 +58,14 @@ public class MainActivity extends AppCompatActivity {
                 ));
 
         mainGuestBtn.setOnClickListener(v -> {
-            // 이전 게스트 세션의 알러지 데이터 초기화 - 게스트는 매 세션 새로 시작
+            // 게스트는 세션 저장 없이 매번 새로 시작 - 앱 재시작 시 로그인 화면으로 복귀
             new UserRepository(this).clearGuestAllergy();
-            sessionManager.save(AppConstants.GUEST_USER_ID);
             Intent intent = new Intent(this, SubActivity.class);
             intent.putExtra(SubActivity.KEY_USER_ID, AppConstants.GUEST_USER_ID);
             startActivity(intent);
         });
 
-        // LiveData 관찰 - ViewModel에서 전달된 상태에 따라 UI/TTS 처리
+        // 로그인 결과에 따라 화면 및 음성 안내 처리
         viewModel.loginState.observe(this, state -> {
             switch (state) {
                 case SUCCESS:
@@ -76,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(this, SubActivity.class);
                     intent.putExtra(SubActivity.KEY_USER_ID, userId);
                     startActivity(intent);
-                    finish(); // 백스택에서 MainActivity 제거 - SubActivity만 남겨야 복원 시 충돌 없음
+                    finish(); // 로그인 화면 닫기 - 뒤로가기로 돌아오지 않도록
                     break;
                 case EMPTY_ID:
                     speak("아이디를 입력해주세요.");
@@ -101,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // setContentView가 호출되지 않은 경우(세션 자동 이동) null 방지
+        // 자동 로그인으로 넘어간 경우 입력창이 없으므로 null 확인 후 초기화
         if (mainId != null) mainId.setText("");
         if (mainPw != null) mainPw.setText("");
     }

@@ -29,7 +29,7 @@ public class SubActivity extends AppCompatActivity {
 
         userId = getIntent().getStringExtra(KEY_USER_ID);
 
-        // intent에 userId가 없으면 (태스크 완전 소멸 후 복원 등) 세션에서 복구
+        // 앱이 완전히 종료됐다가 다시 실행될 때 userId가 없으면 저장된 로그인 정보로 복구
         if (userId == null) {
             userId = sessionManager.getSavedUserId();
         }
@@ -79,8 +79,11 @@ public class SubActivity extends AppCompatActivity {
             startActivity(i);
         });
 
-        historyBtn.setOnClickListener(view ->
-                startActivity(new Intent(this, HistoryActivity.class)));
+        historyBtn.setOnClickListener(view -> {
+            Intent i = new Intent(this, HistoryActivity.class);
+            i.putExtra(KEY_USER_ID, userId);
+            startActivity(i);
+        });
     }
 
     // 로그아웃 확인 다이얼로그
@@ -97,8 +100,7 @@ public class SubActivity extends AppCompatActivity {
 
     private void logout() {
         sessionManager.clear();
-        // FLAG_ACTIVITY_CLEAR_TASK: SubActivity를 포함한 백스택 전체 제거
-        // 뒤로가기를 눌러도 SubActivity로 돌아오지 않음
+        // 로그아웃 후 이전 화면 전부 닫기 - 뒤로가기 눌러도 메뉴 화면으로 돌아오지 않도록
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
