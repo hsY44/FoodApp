@@ -3,9 +3,9 @@
 ![Android](https://img.shields.io/badge/Android-API%2027%2B-3DDC84?logo=android&logoColor=white)
 ![Java](https://img.shields.io/badge/Java-8-ED8B00?logo=openjdk&logoColor=white)
 ![TensorFlow Lite](https://img.shields.io/badge/TFLite-INT8-FF6F00?logo=tensorflow&logoColor=white)
-![Project](https://img.shields.io/badge/프로젝트-개인-green)
+![Project](https://img.shields.io/badge/프로젝트-팀-green)
 
-> 개인 프로젝트 | TFLite INT8 양자화 기반 Android 과자 분류 앱
+> 팀 프로젝트 | TFLite INT8 양자화 기반 Android 과자 분류 앱
 
 ---
 
@@ -14,7 +14,7 @@
 **SafeFood**는 과자 이미지를 촬영하거나 갤러리에서 선택하면 TensorFlow Lite 모델이 17종 과자를 분류하고,
 사용자가 등록한 알러지 성분(22종 기준)과 교차 검사하여 경고를 제공하는 Android 앱입니다.
 
-INT8 양자화로 모델 크기를 **200 MB → 52 MB(약 4배 감소)**로 줄여 모바일 환경에 최적화했습니다.
+INT8 양자화로 모델 크기를 **200 MB → 52 MB(약 4배 감소)**, 최종 분류 정확도 **88%**로 모바일 환경에 최적화했습니다.
 
 ---
 
