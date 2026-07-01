@@ -3,9 +3,9 @@
 ![Android](https://img.shields.io/badge/Android-API%2027%2B-3DDC84?logo=android&logoColor=white)
 ![Java](https://img.shields.io/badge/Java-8-ED8B00?logo=openjdk&logoColor=white)
 ![TensorFlow Lite](https://img.shields.io/badge/TFLite-INT8-FF6F00?logo=tensorflow&logoColor=white)
-![Project](https://img.shields.io/badge/프로젝트-팀-green)
+![Project](https://img.shields.io/badge/프로젝트-개인-blue)
 
-> 팀 프로젝트 | TFLite INT8 양자화 기반 Android 과자 분류 앱
+> 개인 프로젝트 | TFLite INT8 양자화 기반 Android 과자 분류 앱
 
 ---
 
